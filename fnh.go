@@ -43,7 +43,7 @@ func Create(ctx context.Context) *Fnh {
 
 // Query runs a query request to the GraphQL service via the
 // /query endpoint.
-func (f *Fnh) Query(qreq QueryRequest) (*QueryResponse, error) {
+func (f *Fnh) Query(qreq *QueryRequest) (*QueryResponse, error) {
 	data, err := json.Marshal(qreq)
 	if err != nil {
 		return nil, err
