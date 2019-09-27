@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/fnproject/fdk-go"
@@ -49,7 +50,7 @@ func (f *Fnh) Query(qreq *QueryRequest) (*QueryResponse, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", "http://graphql:8080/v1/query", bytes.NewBuffer(data))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/query", f.Context.Config()["graphql_host"]), bytes.NewBuffer(data))
 	if err != nil {
 		return nil, err
 	}
