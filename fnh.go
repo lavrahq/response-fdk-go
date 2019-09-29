@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/fnproject/fdk-go"
+	"github.com/machinebox/graphql"
 )
 
 // Fnh is the Fn Helper utility.
@@ -20,6 +21,12 @@ type Fnh struct {
 type QueryRequest struct {
 	Type string                 `json:"type"`
 	Args map[string]interface{} `json:"args"`
+}
+
+// GraphQLRequest is a request for a GraphQL query.
+type GraphQLRequest struct {
+	Query string                 `json:"query"`
+	Vars  map[string]interface{} `json:"vars"`
 }
 
 // QueryErrorResponse is the response for a Query request when it fails.
@@ -40,6 +47,19 @@ func Create(ctx context.Context) *Fnh {
 		Context: fdk.GetContext(ctx),
 		Client:  http.DefaultClient,
 	}
+}
+
+// GraphQL Query via the /v1/graphql endpoint of the Data service.
+func (f *Fnh) GraphQL(greq *GraphQLRequest, out interface{}) error {
+	client := graphql.NewClient(fmt.Sprintf("%s/v1/graphql", f.Context.Config()["graphql_host"]))
+
+	req := graphql.NewRequest(greq.Query)
+	for k, v := range greq.Vars {
+		req.Var(k, v)
+	}
+
+	ctx := context.Background()
+	return client.Run(ctx, req, &out)
 }
 
 // Query runs a query request to the GraphQL service via the
